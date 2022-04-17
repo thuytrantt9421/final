@@ -3,20 +3,33 @@ import { Text, View, Image, TouchableOpacity, Animated } from "react-native";
 import Slider from "@react-native-community/slider";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SoundPlayer from "react-native-sound-player";
+import { connect } from "react-redux";
 
 import styles from "../styles/styles";
 
-export default class PlayMusicScreen extends React.Component {
+class PlayMusicScreen extends React.Component {
   constructor(props) {
     super(props);
-    const temp = this.props.route.params;
-    this.state = {
-      data: temp.data,
-      img: temp.img,
-      index: 0,
-      status: "pause",
-    };
-    // console.log(this.state.img);
+
+    console.log(this.props.track);
+    // console.log(this.props.album);
+    console.log(this.props.typeForPlay);
+
+    if(this.props.typeForPlay === 'playAlbum') {
+      this.state = {
+        data: this.props.album.tracks.data,
+        img: this.props.album.cover_xl,
+        index: 0,
+        status: "pause"
+      }
+    } else {
+      this.state = {
+        data: [this.props.track],
+        img: this.props.track.album.cover,
+        index: 0,
+        status: "pause"
+      }
+    }
   }
 
   componentDidMount() {}
@@ -150,3 +163,11 @@ export default class PlayMusicScreen extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  track: state.track,
+  album: state.album,
+  typeForPlay: state.typeForPlay,
+});
+
+export default connect(mapStateToProps)(PlayMusicScreen);
