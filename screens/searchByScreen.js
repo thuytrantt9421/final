@@ -6,7 +6,9 @@ import {
   FlatList,
   TouchableHighlight,
   Image,
+  Button,
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 import styles from "../styles/styles";
 
@@ -14,7 +16,7 @@ import { search, albumInfo, trackInfo } from "../api/api";
 
 import { connect } from "react-redux";
 
-import { getTrack, getAlbum } from "../redux/action";
+import { getTrack, getAlbum, getType } from "../redux/action";
 
 class SearchByScreen extends React.Component {
   constructor(props) {
@@ -30,36 +32,26 @@ class SearchByScreen extends React.Component {
   getResultBySearch = async (text) => {
     const results = await search(this.searchBy.searchBy, text);
     this.setState({ results: results, isSearching: false });
-    // console.log(this.state.results);
   };
 
-  handleSearch = (text) => {
-    if (text) {
-      this.setState({ text }, () => this.getResultBySearch(text));
-    }
+  search = () => {
+    this.getResultBySearch(this.state.text);
   };
-
-  componentWillUnmount() {
-    this.setState = (state, callback) => {
-      return;
-    };
-  }
 
   nextNav = async (item) => {
     if (this.searchBy.searchBy === "track") {
       let results = await trackInfo(item.id);
       // console.log(results);
       this.props.getTrack(results);
-      this.props.navigation.navigate("Phát");
+      this.props.getType("playTrack");
+      this.props.navigation.navigate("Phát", { navToPlay: true });
     } else if (this.searchBy.searchBy === "album") {
       let results = await albumInfo(item.id);
       // console.log(results);
-      this.props.getAlbum(results)
+      this.props.getAlbum(results);
+      this.props.getType("playAlbum");
       this.props.navigation.navigate("albumDetail");
     } else if (this.searchBy.searchBy === "album") {
-      // this.props.navigation.navigate("Phát", {
-      //   id: item.id,
-      // });
     }
   };
 
@@ -98,48 +90,63 @@ class SearchByScreen extends React.Component {
   render() {
     return (
       <View style={styles.searchContainer}>
-        {this.searchBy.searchBy === "track" && (
-          <TextInput
-            style={styles.textinput}
-            autoCorrect={false}
-            autoCapitalize="none"
-            autoFocus
-            maxLength={45}
-            placeholder="Nhập tên bài hát ..."
-            onChangeText={this.handleSearch}
-            value={this.state.text}
-          />
-        )}
-        {this.searchBy.searchBy === "album" && (
-          <TextInput
-            style={styles.textinput}
-            autoCorrect={false}
-            autoCapitalize="none"
-            autoFocus
-            maxLength={45}
-            placeholder="Nhập tên album ..."
-            onChangeText={this.handleSearch}
-            value={this.state.text}
-          />
-        )}
-        {this.searchBy.searchBy === "artist" && (
-          <TextInput
-            style={styles.textinput}
-            autoCorrect={false}
-            autoCapitalize="none"
-            autoFocus
-            maxLength={45}
-            placeholder="Nhập tên nghệ sĩ ..."
-            onChangeText={this.handleSearch}
-            value={this.state.text}
-          />
-        )}
+        <View style={styles.textinput}>
+          {this.searchBy.searchBy === "track" && (
+            <TextInput
+              style={styles.search_input}
+              autoCorrect={false}
+              autoCapitalize="none"
+              autoFocus
+              maxLength={45}
+              placeholder="Nhập tên bài hát ..."
+              onChangeText={(text) => {
+                this.setState({ text });
+              }}
+              value={this.state.text}
+            />
+          )}
+          {this.searchBy.searchBy === "album" && (
+            <TextInput
+              style={styles.search_input}
+              autoCorrect={false}
+              autoCapitalize="none"
+              autoFocus
+              maxLength={45}
+              placeholder="Nhập tên album ..."
+              onChangeText={(text) => {
+                this.setState({ text });
+              }}
+              value={this.state.text}
+            />
+          )}
+          {this.searchBy.searchBy === "artist" && (
+            <TextInput
+              style={styles.search_input}
+              autoCorrect={false}
+              autoCapitalize="none"
+              autoFocus
+              maxLength={45}
+              placeholder="Nhập tên nghệ sĩ ..."
+              onChangeText={(text) => {
+                this.setState({ text });
+              }}
+              value={this.state.text}
+            />
+          )}
+          <Button
+            title="Tìm kiếm"
+            onPress={this.search}
+            style={styles.search_button}
+          ></Button>
+        </View>
         {this.state.results && (
           <FlatList
             style={styles.flatlist}
             data={this.state.results}
             renderItem={this.renderItem}
-            keyExtractor={(item) => item.id + Math.floor(Math.random() * 1000)}
+            keyExtractor={(item) =>
+              item.id + Math.floor(Math.random() * 100000)
+            }
           ></FlatList>
         )}
       </View>
@@ -147,4 +154,8 @@ class SearchByScreen extends React.Component {
   }
 }
 
-export default connect(null, {getTrack: getTrack, getAlbum: getAlbum})(SearchByScreen)
+export default connect(null, {
+  getTrack: getTrack,
+  getAlbum: getAlbum,
+  getType: getType,
+})(SearchByScreen);
