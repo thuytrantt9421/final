@@ -52,7 +52,6 @@ class PlayMusicScreen extends React.Component {
       this.loadAudio();
     }
     if (prevProps != this.props) {
-      console.log("hii");
       this.loadAudio();
     }
   }

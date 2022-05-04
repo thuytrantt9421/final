@@ -51,7 +51,7 @@ class SearchByScreen extends React.Component {
       this.props.getAlbum(results);
       this.props.getType("playAlbum");
       this.props.navigation.navigate("albumDetail");
-    } else if (this.searchBy.searchBy === "album") {
+    } else if (this.searchBy.searchBy === "") {
     }
   };
 

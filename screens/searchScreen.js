@@ -9,11 +9,6 @@ import { getType } from "../redux/action";
 export default class SearchScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      text: "",
-      musics: null,
-      isSearching: false,
-    };
   }
 
   render() {
